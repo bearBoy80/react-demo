@@ -71,7 +71,7 @@ const kanbanCardStyles = css`
 const kanbanCardTitleStyles = css`
   min-height: 3rem;
 `;
-
+const DATA_STORE_KEY = 'kanban-data-store';
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
@@ -166,8 +166,29 @@ function App() {
     { title: '开发任务-2', status: '2022-06-24 18:15' },
     { title: '测试任务-1', status: '2022-07-03 18:15' }  
   ]);
+  useEffect(() => {
+    const data = window.localStorage.getItem(DATA_STORE_KEY);
+    setTimeout(() => {
+      if (data){
+        const kanbanColumnData = JSON.parse(data);
+        setTodoList(kanbanColumnData.todoList);
+        setOngoingList(kanbanColumnData.ongoingList);
+        setDoneList(kanbanColumnData.doneList);
+      }
+    },1000)
+  },[]);
   const handleAdd = (evt) => {
     setShowAdd(true);
+  };
+  const handleSaveAll=()=>{
+    const data =JSON.stringify({
+      todoList,
+      ongoingList,
+      doneList
+    }
+    );
+    console.log(data);
+    window.localStorage.setItem(DATA_STORE_KEY,data);
   };
   const handleSubmit = (title) => {
     setTodoList(currentTodoList => [
@@ -180,7 +201,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>我的看板</h1>
+        <h1>我的看板<button onClick={handleSaveAll}>
+        保存所有卡片
+        </button>
+        </h1>
         <img src={logo} className="App-logo" alt="logo" />
       </header>
       <KanbanBoard>
